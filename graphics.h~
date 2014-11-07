@@ -1,0 +1,13 @@
+#include <gtk/gtk.h>
+
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
+
+
+GtkWidget *window = NULL;
+GtkWidget *MainTable;
+GtkWidget *RightTable;
+GtkWidget *BPMeasureEntry;
+GtkWidget *TempoEntry;
+GtkWidget *NameEntry;
+#endif

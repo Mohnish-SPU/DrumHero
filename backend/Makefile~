@@ -1,0 +1,13 @@
+#MakeFile
+#
+
+CC = gcc
+
+all:
+	$(CC) PageOne.c -o PageOne `pkg-config --cflags --libs gtk+-2.0`
+
+.PHONY:clean
+
+clean:
+	rm -rf PageOne
+	rm -rf *.o
