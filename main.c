@@ -28,9 +28,9 @@ int Tempo;
 
 int page = 0;
 int RecFlag = 0;
-int StartFlag = 0;
+int PlayFlag = 0;
 
-int hihat, snare, hitom, crash, lotom, floortom, bass;
+int hihat, snare, hitom, crash, lotom, floortom, bass, ride;
 
 double duration;
 
@@ -65,9 +65,11 @@ void makeDrumKit()
     
     lotom = readScale("samples/drums-tom/","osd-lo_");
     
-    floortom = readScale("samples/yamaha-drums/","floor_");
+    floortom = readScale("samples/drums-tom/","boom_");
     
     bass = readScale("samples/yamaha-drums/","bass_");
+    
+    ride = readScale("samples/drums-ride/","quartertone_");
 }
 
 
@@ -132,17 +134,12 @@ void hidePageTwo()
 void pageTwo()
 {
 	
-	//hidePageOne();
+
+	songInit();
 	makeDrumKit();
 	gtk_window_set_title (GTK_WINDOW (window), "Drum Studio");
 	
-	Tempo = (int)gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(TempoEntry));
-	SongName = (char*)gtk_entry_get_text(GTK_ENTRY(NameEntry));
-	strcat(SongName,".rra");
-	PlaySong = NULL;
-	//PlaySong = "rplay ";
-	//strcat(PlaySong,"rplay ");
-	//strcat(PlaySong,SongName);
+
 	
 	hbox = gtk_hbox_new( 0, 0);
 	radio1 = gtk_radio_button_new(NULL);
@@ -177,58 +174,79 @@ void pageTwo()
 
 void playSnare()
 {
-	//system("rplay snare.rra");
+	system("rplay snare.rra");
 	if(RecFlag == 1)
 		drum(duration,snare,SNARE);
 	
 }
+
 void playHihat()
 {
-	system("rplay osd-closed_48.rra");
+	system("rplay hihat.rra");
+	if(RecFlag == 1)
+		drum(duration,hihat,HAT_CLOSED);
 }
 void playBass()
 {
-	system("rplay bass_10.rra");	
+	system("rplay bass.rra");
+	if(RecFlag == 1)
+		drum(duration,bass,BASS_MIDDLE);
+	
 }
 void playHi()
 {
-	system("rplay osd-hi_36.rra");	
+	system("rplay hitom.rra");
+	if(RecFlag == 1)
+		drum(duration,hitom,TOM_HIGH);
+	
 }
 void playLow()
 {
-	system("rplay osd-lo_36.rra");	
+	system("rplay lotom.rra");
+	if(RecFlag == 1)
+		drum(duration,lotom,TOM_LOW);
+	
 
 }
 void playFloor()
 {
-	system("rplay floor_6.rra");	
+	system("rplay floortom.rra");
+	if(RecFlag == 1)
+		drum(duration,floortom,TIM_MIDDLE);
+	
 
 }
 void playCrash()
 {
-	system("rplay quartertone_12.rra");	
+	system("rplay crash.rra");
+	if(RecFlag == 1)
+		drum(duration,crash, CRASH);
+	
 	
 }
 
+void playRest()
+{
+	if(RecFlag == 1);
+		rest(duration);
+}
 void playRide()
 {
-	system("rplay quartertone_0.rra");	
+	system("rplay ride1.rra");
+	if(RecFlag == 1)
+		drum(duration,ride,RIDE);
+	
 	
 }
 
 
 void startPlay()
 {
-	if(StartFlag == 0)
-	{	
-		setWindow(window,"mohnish/gb-drum-kit play1.jpg");
-		system(PlaySong);
-		StartFlag = 1;
-	}
-	else
+	if(PlayFlag==1)
 	{
-		setWindow(window,"mohnish/gb-drum-kit changed1.jpg");
-		StartFlag = 0;
+		setWindow(window,"mohnish/gb-drum-kit play4.jpg");
+		system(PlaySong);
+		//setWindow(window,"mohnish/gb-drum-kit changed1.jpg");
 	}	
 }
 void startRec()
@@ -236,12 +254,12 @@ void startRec()
 	if(RecFlag == 0)
 	{	
 		setWindow(window,"mohnish/gb-drum-kit record1.jpg");
-		songInit();
-		
+		printf("%d-Tempo \n",Tempo);
 		setTempo(Tempo);
 		setTime(4,4);
 		openOutput(SongName,0,0);
 		RecFlag = 1;
+		PlayFlag = 1;
 	}
 	else
 	{
@@ -251,15 +269,23 @@ void startRec()
 	}	
 }
 
+void goBack()
+{
+	hidePageTwo();
+	page = 1;
+	showPageOne();
+}
+
 void sense(int x, int y)
 {
 	if( (x > 545 && x < 600) && (y > 15 && y < 49) )//Record Button
 		startRec();
 	else if( (x > 476 && x < 545) && (y > 15 && y < 49) )//Play
 		startPlay();
-	//else if( (x > 426 && x < 476) && (y > 15 && y < 49) )//Back
-		//goBack();
-
+	else if( (x > 426 && x < 476) && (y > 15 && y < 49) )//Back
+		goBack();
+	else if( (x > 452 && x < 574) && (y > 115 && y < 160) )//Back
+		playRest();
 	else if( (x > 50 && x < 325) && (y > 534 && y < 711) )//Snare
 		playSnare();
 	else if( (x > 0 && x < 270) && (y > 340 && y < 480) )//Hihat
@@ -295,8 +321,17 @@ button_press_event( GtkWidget *widget, GdkEventButton *event )
 	{
 		if(((int)event->x > 890 && (int)event->x < 955) && ((int)event->y > 574 && (int)event->y < 635))
 		{
+			
 			hidePageOne();
 			showPageTwo();
+			Tempo = (int)gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(TempoEntry));
+			SongName = (char*)gtk_entry_get_text(GTK_ENTRY(NameEntry));
+			strcat(SongName,".rra");
+			PlaySong = (char*)malloc(strlen("rplay ")+1+strlen(SongName));
+			PlaySong[0]='\0';
+			strcat(PlaySong,"rplay ");
+			strcat(PlaySong,SongName);
+
 			page = 2;
 		}	
 	}
@@ -333,7 +368,7 @@ void pageOne()
     gtk_table_attach_defaults (GTK_TABLE (RightTable),NameEntry, 0, 2, 4, 5);
 
   //* Creating the Tempo entry
-  	adjustment = gtk_adjustment_new (100.0, 50.0, 300.0, 1.0, 5.0, 0.0);
+  	adjustment = gtk_adjustment_new (120.0, 50.0, 300.0, 1.0, 5.0, 0.0);
 
     TempoEntry = gtk_spin_button_new( adjustment, 2.0, 0);
     gtk_spin_button_set_increments (GTK_SPIN_BUTTON(TempoEntry), 1, 5);
@@ -380,11 +415,14 @@ int main( int   argc,
 	
 	gtk_window_set_title (GTK_WINDOW (window), "Drum Studio");
 	gtk_widget_set_size_request(window,1024,768);
+	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
+	gtk_window_set_icon(GTK_WINDOW(window),load_pixbuf_from_file("mohnish/OpCover.jpg"));
 	g_signal_connect (window, "delete-event",
                       G_CALLBACK (delete_event), NULL);
 	
 	//pageOne();
 	setWindow(window,"mohnish/OpCover.jpg");
+	
 	pageOne();
 	pageTwo();
 	gtk_widget_show (window);
