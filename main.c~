@@ -20,7 +20,8 @@ GtkWidget *radio4, *radio8, *radio2, *radio1;
 GtkWidget *hbox;
 GtkWidget *LeftTable;
 
-gchar *SongName = "default";
+gchar *SongName;
+char *PlaySong;
 
 int Tempo;
 
@@ -33,9 +34,12 @@ int hihat, snare, hitom, crash, lotom, floortom, bass;
 
 double duration;
 
-void PageOne();
+void pageOne();
 void showPageOne();
 void hidePageOne();
+void showPageTwo();
+void hidePageTwo();
+void pageOne();
 
 void setDur(GtkWidget* widget, gpointer data)
 {
@@ -102,8 +106,9 @@ void setWindow(GtkWidget *widget,gpointer   data )
     gtk_widget_set_style (GTK_WIDGET(window), GTK_STYLE (StyleNew));
 }
 
-void pageTwoShow()
+void showPageTwo()
 {
+	setWindow(window,"mohnish/gb-drum-kit changed1.jpg");
 	gtk_widget_show(radio1);
 	gtk_widget_show(radio2);
 	gtk_widget_show(radio4);
@@ -113,7 +118,7 @@ void pageTwoShow()
 	gtk_widget_show(MainTable);
 }
 
-void pageTwoHide()
+void hidePageTwo()
 {
 	gtk_widget_hide(radio1);
 	gtk_widget_hide(radio2);
@@ -127,13 +132,17 @@ void pageTwoHide()
 void pageTwo()
 {
 	
-	hidePageOne();
+	//hidePageOne();
 	makeDrumKit();
 	gtk_window_set_title (GTK_WINDOW (window), "Drum Studio");
 	
 	Tempo = (int)gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(TempoEntry));
 	SongName = (char*)gtk_entry_get_text(GTK_ENTRY(NameEntry));
 	strcat(SongName,".rra");
+	PlaySong = NULL;
+	//PlaySong = "rplay ";
+	//strcat(PlaySong,"rplay ");
+	//strcat(PlaySong,SongName);
 	
 	hbox = gtk_hbox_new( 0, 0);
 	radio1 = gtk_radio_button_new(NULL);
@@ -161,9 +170,7 @@ void pageTwo()
 	gtk_table_attach_defaults (GTK_TABLE (LeftTable),hbox , 0, 1, 0, 1);
 	gtk_table_attach_defaults (GTK_TABLE (MainTable),LeftTable , 0, 1, 0, 1);
 	
-	setWindow(window,"mohnish/gb-drum-kit changed1.jpg");
 	
-	pageTwoShow();
 }
 
 
@@ -172,7 +179,7 @@ void playSnare()
 {
 	//system("rplay snare.rra");
 	if(RecFlag == 1)
-		drum(I,snare,SNARE);
+		drum(duration,snare,SNARE);
 	
 }
 void playHihat()
@@ -214,8 +221,8 @@ void startPlay()
 {
 	if(StartFlag == 0)
 	{	
-		setWindow(window,"drumkitSettings.png");
-		system("rplay snare.rra");
+		setWindow(window,"mohnish/gb-drum-kit play1.png");
+		system(PlaySong);
 		StartFlag = 1;
 	}
 	else
@@ -246,10 +253,13 @@ void startRec()
 
 void sense(int x, int y)
 {
-	if( (x > 545 && x < 600) && (y > 26 && y < 57) )//Record Button
+	if( (x > 545 && x < 600) && (y > 15 && y < 49) )//Record Button
 		startRec();
-	else if( (x > 882 && x < 921) && (y > 22 && y < 63) )//Play
+	else if( (x > 476 && x < 545) && (y > 15 && y < 49) )//Play
 		startPlay();
+	//else if( (x > 426 && x < 476) && (y > 15 && y < 49) )//Back
+		//goBack();
+
 	else if( (x > 50 && x < 325) && (y > 534 && y < 711) )//Snare
 		playSnare();
 	else if( (x > 0 && x < 270) && (y > 340 && y < 480) )//Hihat
@@ -285,20 +295,21 @@ button_press_event( GtkWidget *widget, GdkEventButton *event )
 	{
 		if(((int)event->x > 890 && (int)event->x < 955) && ((int)event->y > 574 && (int)event->y < 635))
 		{
-			pageTwo();
+			hidePageOne();
+			showPageTwo();
 			page = 2;
 		}	
 	}
 	else if(page == 0)
 	{
-		setWindow(window,"mohnish/Home.jpg");
-		PageOne();
+		showPageOne();
+		//PageOne();
 		page = 1;
 	}
 	printf( "%d %d \n",(int)event->x, (int)event->y);
 	return TRUE;
 }
-void PageOne()
+void pageOne()
 {
     
     /* Set the window title */
@@ -328,7 +339,7 @@ void PageOne()
     gtk_spin_button_set_increments (GTK_SPIN_BUTTON(TempoEntry), 1, 5);
     gtk_table_attach_defaults (GTK_TABLE (RightTable),TempoEntry, 0, 2, 6, 7);
     
-	showPageOne();	
+	//showPageOne();	
 
 }
 void hidePageOne()
@@ -341,6 +352,7 @@ void hidePageOne()
 }
 void showPageOne()
 {
+	setWindow(window,"mohnish/Home.jpg");
 	gtk_widget_show (NameEntry);
    
     gtk_widget_show (TempoEntry);
@@ -373,6 +385,8 @@ int main( int   argc,
 	
 	//pageOne();
 	setWindow(window,"mohnish/OpCover.jpg");
+	pageOne();
+	pageTwo();
 	gtk_widget_show (window);
 
     gtk_main();
