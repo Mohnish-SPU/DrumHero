@@ -1,13 +1,40 @@
 #include <gtk/gtk.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <songlib/util.h>
+#include <songlib/songlib.h>
+#include <pthread.h>
+#include <string.h>
 
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+
+char *PROGRAM_NAME = "DrumHero";
+char *PROGRAM_VERSION = "0.03";
 
 
-GtkWidget *window = NULL;
+GtkWidget *window;
 GtkWidget *MainTable;
 GtkWidget *RightTable;
-GtkWidget *BPMeasureEntry;
 GtkWidget *TempoEntry;
 GtkWidget *NameEntry;
-#endif
+GtkAdjustment *adjustment;
+GtkWidget *radio4, *radio8, *radio2, *radio1;
+GtkWidget *hbox;
+GtkWidget *LeftTable;
+
+gchar *SongName;
+char *PlaySong;
+
+int Tempo;
+
+int page = 0;
+int RecFlag = 0;
+int PlayFlag = 0;
+
+int hihat, snare, hitom, crash, lotom, floortom, bass, ride;
+
+double duration;
+void playSnare();
+
+
+

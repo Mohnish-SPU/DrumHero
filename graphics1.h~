@@ -1,0 +1,40 @@
+#include <gtk/gtk.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <songlib/util.h>
+#include <songlib/songlib.h>
+#include <pthread.h>
+#include <string.h>
+
+
+char *PROGRAM_NAME;
+char *PROGRAM_VERSION;
+
+
+GtkWidget *window;
+GtkWidget *MainTable;
+GtkWidget *RightTable;
+GtkWidget *TempoEntry;
+GtkWidget *NameEntry;
+GtkAdjustment *adjustment;
+GtkWidget *radio4, *radio8, *radio2, *radio1;
+GtkWidget *hbox;
+GtkWidget *LeftTable;
+
+gchar *SongName;
+char *PlaySong;
+
+int Tempo;
+
+int page;
+int RecFlag;
+int PlayFlag;
+
+int hihat, snare, hitom, crash, lotom, floortom, bass, ride;
+
+double duration;
+void playSnare();
+
+
+

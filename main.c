@@ -7,10 +7,14 @@
 #include <pthread.h>
 #include <string.h>
 
-char *PROGRAM_NAME = "DrumHero";
-char *PROGRAM_VERSION = "0.03";
+#include "graphics1.h"
 
-GtkWidget *window = NULL;
+
+char *PROGRAM_NAME;
+char *PROGRAM_VERSION;
+
+
+GtkWidget *window;
 GtkWidget *MainTable;
 GtkWidget *RightTable;
 GtkWidget *TempoEntry;
@@ -25,10 +29,9 @@ char *PlaySong;
 
 int Tempo;
 
-
-int page = 0;
-int RecFlag = 0;
-int PlayFlag = 0;
+int page;
+int RecFlag;
+int PlayFlag;
 
 int hihat, snare, hitom, crash, lotom, floortom, bass, ride;
 
@@ -41,17 +44,17 @@ void showPageTwo();
 void hidePageTwo();
 void pageOne();
 
-void setDur(GtkWidget* widget, gpointer data)
+
+void setDur(GtkWidget *widget,gpointer   data)
 {
-	if(strcmp((char*)data,"4") == 0)
-		duration = Q;
+	if(strcmp((char*)data,"1") == 0)
+		duration = W;
 	else if(strcmp((char*)data,"2") == 0)
 		duration = H;
+	else if(strcmp((char*)data,"4") == 0)
+		duration = Q;
 	else if(strcmp((char*)data,"8") == 0)
 		duration = I;
-	else if(strcmp((char*)data,"1") == 0)
-		duration = W;
-	//printf("%d\n",(int)duration);
 }
 
 void makeDrumKit()
@@ -174,7 +177,7 @@ void pageTwo()
 
 void playSnare()
 {
-	system("rplay snare.rra");
+	system("rplay samples/live/snare.rra");
 	if(RecFlag == 1)
 		drum(duration,snare,SNARE);
 	
@@ -182,27 +185,27 @@ void playSnare()
 
 void playHihat()
 {
-	system("rplay hihat.rra");
+	system("rplay samples/live/hihat.rra");
 	if(RecFlag == 1)
 		drum(duration,hihat,HAT_CLOSED);
 }
 void playBass()
 {
-	system("rplay bass.rra");
+	system("rplay samples/live/bass.rra");
 	if(RecFlag == 1)
 		drum(duration,bass,BASS_MIDDLE);
 	
 }
 void playHi()
 {
-	system("rplay hitom.rra");
+	system("rplay samples/live/hitom.rra");
 	if(RecFlag == 1)
 		drum(duration,hitom,TOM_HIGH);
 	
 }
 void playLow()
 {
-	system("rplay lotom.rra");
+	system("rplay samples/live/lotom.rra");
 	if(RecFlag == 1)
 		drum(duration,lotom,TOM_LOW);
 	
@@ -210,7 +213,7 @@ void playLow()
 }
 void playFloor()
 {
-	system("rplay floortom.rra");
+	system("rplay samples/live/floortom.rra");
 	if(RecFlag == 1)
 		drum(duration,floortom,TIM_MIDDLE);
 	
@@ -218,7 +221,7 @@ void playFloor()
 }
 void playCrash()
 {
-	system("rplay crash.rra");
+	system("rplay samples/live/crash.rra");
 	if(RecFlag == 1)
 		drum(duration,crash, CRASH);
 	
@@ -232,7 +235,7 @@ void playRest()
 }
 void playRide()
 {
-	system("rplay ride1.rra");
+	system("rplay samples/live/ride1.rra");
 	if(RecFlag == 1)
 		drum(duration,ride,RIDE);
 	
@@ -246,7 +249,6 @@ void startPlay()
 	{
 		setWindow(window,"mohnish/gb-drum-kit play4.jpg");
 		system(PlaySong);
-		//setWindow(window,"mohnish/gb-drum-kit changed1.jpg");
 	}	
 }
 void startRec()
@@ -338,7 +340,6 @@ button_press_event( GtkWidget *widget, GdkEventButton *event )
 	else if(page == 0)
 	{
 		showPageOne();
-		//PageOne();
 		page = 1;
 	}
 	printf( "%d %d \n",(int)event->x, (int)event->y);
@@ -368,14 +369,12 @@ void pageOne()
     gtk_table_attach_defaults (GTK_TABLE (RightTable),NameEntry, 0, 2, 4, 5);
 
   //* Creating the Tempo entry
-  	adjustment = gtk_adjustment_new (120.0, 50.0, 300.0, 1.0, 5.0, 0.0);
+  	adjustment = gtk_adjustment_new (150.0, 100.0, 300.0, 1.0, 5.0, 0.0);
 
     TempoEntry = gtk_spin_button_new( adjustment, 2.0, 0);
     gtk_spin_button_set_increments (GTK_SPIN_BUTTON(TempoEntry), 1, 5);
     gtk_table_attach_defaults (GTK_TABLE (RightTable),TempoEntry, 0, 2, 6, 7);
     
-	//showPageOne();	
-
 }
 void hidePageOne()
 {
@@ -402,6 +401,12 @@ void musicBackground(void* msg)
 int main( int   argc,
           char *argv[] )
 {
+	PROGRAM_NAME = "DrumHero";
+	PROGRAM_VERSION = "0.03";
+	page = 0;
+	RecFlag = 0;
+	PlayFlag = 0;
+	
 	gtk_init (&argc, &argv);
 	
 	//Window here
