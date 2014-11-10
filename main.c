@@ -7,8 +7,6 @@
 #include <pthread.h>
 #include <string.h>
 
-#include "graphics1.h"
-
 
 char *PROGRAM_NAME;
 char *PROGRAM_VERSION;
@@ -23,6 +21,7 @@ GtkAdjustment *adjustment;
 GtkWidget *radio4, *radio8, *radio2, *radio1;
 GtkWidget *hbox;
 GtkWidget *LeftTable;
+char* target;
 
 gchar *SongName;
 char *PlaySong;
@@ -80,6 +79,7 @@ static gboolean delete_event( GtkWidget *widget,
                               GdkEvent  *event,
                               gpointer   data )
 {
+	system(target);
     gtk_main_quit ();
     return FALSE;
 }
@@ -268,6 +268,7 @@ void startRec()
 		closeOutput();
 		setWindow(window,"mohnish/gb-drum-kit changed1.jpg");
 		RecFlag = 0;
+		
 	}	
 }
 
@@ -276,6 +277,7 @@ void goBack()
 	hidePageTwo();
 	page = 1;
 	showPageOne();
+	
 }
 
 void sense(int x, int y)
@@ -321,7 +323,7 @@ button_press_event( GtkWidget *widget, GdkEventButton *event )
 	}
 	else if(page == 1)
 	{
-		if(((int)event->x > 890 && (int)event->x < 955) && ((int)event->y > 574 && (int)event->y < 635))
+		if(((int)event->x > 715 && (int)event->x < 942) && ((int)event->y > 628 && (int)event->y < 693))
 		{
 			
 			hidePageOne();
@@ -330,9 +332,12 @@ button_press_event( GtkWidget *widget, GdkEventButton *event )
 			SongName = (char*)gtk_entry_get_text(GTK_ENTRY(NameEntry));
 			strcat(SongName,".rra");
 			PlaySong = (char*)malloc(strlen("rplay ")+1+strlen(SongName));
+			target = (char*)malloc(strlen("rra2mp3 ")+1+strlen(SongName));
 			PlaySong[0]='\0';
+			target[0]='\0';
 			strcat(PlaySong,"rplay ");
 			strcat(PlaySong,SongName);
+			strcat(target,SongName);
 
 			page = 2;
 		}	
@@ -386,7 +391,7 @@ void hidePageOne()
 }
 void showPageOne()
 {
-	setWindow(window,"mohnish/Home.jpg");
+	setWindow(window,"mohnish/Home1.jpg");
 	gtk_widget_show (NameEntry);
    
     gtk_widget_show (TempoEntry);
